@@ -19,24 +19,21 @@ public class MainController {
     }
 
     @RequestMapping(value="/{id}", method = RequestMethod.GET)
-    public @ResponseBody String home(@PathVariable int id) {
+    public @ResponseBody String find(@PathVariable int id) {
         JSONObject jarr = new JSONObject(ss.queryProduct(id));
         return jarr.toString();
     }
 
     @RequestMapping(value="/save", method = RequestMethod.POST, produces = "application/json")
-    public @ResponseBody int home(@RequestBody Product product) {
-
+    public @ResponseBody String save(@RequestBody Product product) {
         ss.saveProduct(product);
+        return "success";
+    }
 
-//        JSONObject jarr = new JSONObject(ss.queryProduct(product.getId()));
-//
-//        if(jarr != null){
-//            return jarr.toString();
-//        } else {
-//            return "fail";
-//        }
-        return 200;
+    @RequestMapping(value="/delete", method = RequestMethod.POST, produces = "application/x-www-form-urlencoded;charset=UTF-8")
+    public @ResponseBody String delete(@RequestParam int id){
+        ss.removeProduct(id);
+        return "success";
     }
 
 }
