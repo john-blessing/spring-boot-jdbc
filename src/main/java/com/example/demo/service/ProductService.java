@@ -48,10 +48,10 @@ public class ProductService {
     @Transactional
     public String removeProduct(int id){
         if(productDao.findById(id) == null){
-            return "此商品不存在";
+            return "此商品不存在~";
         } else {
             productDao.deleteById(id);
-            return "删除成功";
+            return "删除成功~";
         }
     }
 }
