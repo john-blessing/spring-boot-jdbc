@@ -32,8 +32,7 @@ public class MainController {
 
     @RequestMapping(value="/delete", method = RequestMethod.POST, produces = "application/x-www-form-urlencoded;charset=UTF-8")
     public @ResponseBody String delete(@RequestParam int id){
-        ss.removeProduct(id);
-        return "success";
+        return ss.removeProduct(id);
     }
 
 }

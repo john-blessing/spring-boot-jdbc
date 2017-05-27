@@ -47,7 +47,11 @@ public class ProductService {
     //删除
     @Transactional
     public String removeProduct(int id){
-        productDao.deleteById(id);
-        return "删除成功";
+        if(productDao.findById(id) == null){
+            return "此商品不存在";
+        } else {
+            productDao.deleteById(id);
+            return "删除成功";
+        }
     }
 }
