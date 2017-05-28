@@ -1,65 +1,49 @@
 package com.example.demo.entity;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.io.Serializable;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by keifc on 2017/5/27.
  */
 
-@Entity
-@Table(name = "product")
-public class Product implements Serializable {
+@Component
+public class Product {
 
-    @Id
-    @GeneratedValue
-    private int id;
-    private float price;
-    private String name;
-    private String description;
-    private int own_id;
+    private String p_id;
+    private float p_price;
+    private String p_name;
+    private String p_des;
 
-    public int getId() {
-        return id;
+    public String getP_id() {
+        return p_id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setP_id(String p_id) {
+        this.p_id = p_id;
     }
 
-    public float getPrice() {
-        return price;
+    public float getP_price() {
+        return p_price;
     }
 
-    public void setPrice(float price) {
-        this.price = price;
+    public void setP_price(float p_price) {
+        this.p_price = p_price;
     }
 
-    public String getName() {
-        return name;
+    public String getP_name() {
+        return p_name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setP_name(String p_name) {
+        this.p_name = p_name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getP_des() {
+        return p_des;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getOwn_id() {
-        return own_id;
-    }
-
-    public void setOwn_id(int own_id) {
-        this.own_id = own_id;
+    public void setP_des(String p_des) {
+        this.p_des = p_des;
     }
 }

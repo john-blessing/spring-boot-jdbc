@@ -29,9 +29,9 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-devtools")
 	compile("org.springframework.boot:spring-boot-starter")
 	compile("org.springframework:spring-jdbc")
-	compile("com.h2database:h2")
-	compile('org.json:json:20170516')
-	compile('com.zaxxer:HikariCP:2.3.13')
-	compile('mysql:mysql-connector-java:5.1.6')
+	compile group: 'com.h2database', name: 'h2', version: '1.4.195'
+	compile group: 'org.json', name: 'json', version: '20170516'
+	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.6.1'
+	compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
 	testCompile("junit:junit")
 }

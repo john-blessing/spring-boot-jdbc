@@ -3,6 +3,7 @@ package com.example.demo.web;
 import com.example.demo.entity.Product;
 import com.example.demo.service.ProductService;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -12,27 +13,61 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value="/product")
 public class MainController {
 
+    @Autowired
     private ProductService ss;
 
     public MainController(ProductService ss) {
         this.ss = ss;
     }
 
-    @RequestMapping(value="/{id}", method = RequestMethod.GET)
-    public @ResponseBody String find(@PathVariable int id) {
-        JSONObject jarr = new JSONObject(ss.queryProduct(id));
-        return jarr.toString();
+    // 输入结果
+    public String resultMsg(int res){
+        JSONObject jsb = new JSONObject();
+        if(res == 1){
+            jsb.put("meg", "success");
+            jsb.put("code", 200);
+        } else {
+            jsb.put("meg", "fail");
+            jsb.put("code", 200);
+        }
+
+        return jsb.toString();
+    }
+
+    @RequestMapping(value="/{p_id}", method = RequestMethod.GET)
+    public @ResponseBody String find(@PathVariable String p_id) {
+        JSONObject jsb = new JSONObject(ss.queryProduct(p_id));
+        jsb.put("meg", jsb);
+        jsb.put("code", 200);
+        return jsb.toString();
     }
 
     @RequestMapping(value="/save", method = RequestMethod.POST, produces = "application/json")
     public @ResponseBody String save(@RequestBody Product product) {
-        ss.saveProduct(product);
-        return "success";
+        if(ss.saveProduct(product) == 1){
+            return this.resultMsg(1);
+        } else {
+            return this.resultMsg(0);
+        }
+
     }
 
-    @RequestMapping(value="/delete", method = RequestMethod.POST, produces = "application/x-www-form-urlencoded;charset=UTF-8")
-    public @ResponseBody String delete(@RequestParam int id){
-        return ss.removeProduct(id);
+    @RequestMapping(value="/delete", method = RequestMethod.POST)
+    public @ResponseBody String delete(@RequestParam String p_id){
+        if(ss.removeProduct(p_id) == 1){
+            return this.resultMsg(1);
+        } else {
+            return this.resultMsg(0);
+        }
+    }
+
+    @RequestMapping(value="/update", method = RequestMethod.POST, produces = "application/json")
+    public @ResponseBody String update(@RequestBody Product product) {
+        if(ss.updateProduct(product) == 1){
+            return this.resultMsg(1);
+        } else {
+            return this.resultMsg(0);
+        }
     }
 
 }
