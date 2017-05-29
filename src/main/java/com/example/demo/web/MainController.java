@@ -6,6 +6,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Created by keifc on 2017/5/24.
  */
@@ -34,12 +36,14 @@ public class MainController {
         return jsb.toString();
     }
 
+    @RequestMapping(value="/", method = RequestMethod.GET)
+    public @ResponseBody List<Product> findAll() {
+        return ss.queryProductAll();
+    }
+
     @RequestMapping(value="/{p_id}", method = RequestMethod.GET)
-    public @ResponseBody String find(@PathVariable String p_id) {
-        JSONObject jsb = new JSONObject(ss.queryProduct(p_id));
-        jsb.put("meg", jsb);
-        jsb.put("code", 200);
-        return jsb.toString();
+    public @ResponseBody Product find(@PathVariable String p_id) {
+        return ss.queryProduct(p_id);
     }
 
     @RequestMapping(value="/save", method = RequestMethod.POST, produces = "application/json")
