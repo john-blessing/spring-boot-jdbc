@@ -48,23 +48,16 @@ public class ProductService implements ProductServiceImpl {
     @Override
     @Transactional
     public int saveProduct(Product product) {
-        int count = this.queryProductCount(product.getP_id());
-        int result = -1;
-
         // 判断时候数据库里存在
-        if (count == 0) {
-            result = jdbcTemplate.update("INSERT INTO female_style VALUES(?,?,?,?)", new PreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement ps) throws SQLException {
-                    ps.setString(1, product.getP_id());
-                    ps.setString(2, product.getP_name());
-                    ps.setFloat(3, product.getP_price());
-                    ps.setString(4, product.getP_des());
-                }
-            });
-        } else if (count > 1) {
-            this.removeProduct(product.getP_id());
-        }
+        int result = jdbcTemplate.update("INSERT INTO female_style VALUES(?,?,?,?)", new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, product.getP_id());
+                ps.setString(2, product.getP_name());
+                ps.setFloat(3, product.getP_price());
+                ps.setString(4, product.getP_des());
+            }
+        });
 
         return result;
     }
@@ -94,5 +87,10 @@ public class ProductService implements ProductServiceImpl {
                         ps.setString(5, product.getP_id());
                     }
                 });
+    }
+
+    @Override
+    public void sendEmail() {
+
     }
 }

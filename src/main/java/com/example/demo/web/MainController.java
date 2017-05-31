@@ -28,7 +28,7 @@ public class MainController {
             jsb.put("code", 200);
         } else {
             jsb.put("meg", "fail");
-            jsb.put("code", 200);
+            jsb.put("code", 100);
         }
 
         return jsb.toString();

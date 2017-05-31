@@ -16,4 +16,6 @@ public interface ProductServiceImpl {
      int removeProduct(String id);
 
      int updateProduct(Product product);
+
+     void sendEmail();
 }
