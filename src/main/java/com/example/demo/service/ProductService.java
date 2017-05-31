@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Created by keifc on 2017/5/24.
@@ -92,5 +93,10 @@ public class ProductService implements ProductServiceImpl {
     @Override
     public void sendEmail() {
 
+    }
+
+    @Override
+    public ArrayList<Product> queryProductAll() {
+        return (ArrayList) jdbcTemplate.queryForList("SELECT * FROM female_style");
     }
 }

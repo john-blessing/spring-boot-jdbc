@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Product;
 
+import java.util.ArrayList;
+
 /**
  * Created by Administrator on 2017/5/28.
  */
@@ -18,4 +20,6 @@ public interface ProductServiceImpl {
      int updateProduct(Product product);
 
      void sendEmail();
+
+     ArrayList<Product> queryProductAll();
 }

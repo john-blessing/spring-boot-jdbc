@@ -29,6 +29,8 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-devtools")
 	compile("org.springframework.boot:spring-boot-starter")
 	compile("org.springframework:spring-jdbc")
+	compile('io.jsonwebtoken:jjwt:0.7.0')
+	compile("org.springframework.boot:spring-boot-starter-security")
 	compile group: 'com.h2database', name: 'h2', version: '1.4.195'
 	compile group: 'org.json', name: 'json', version: '20170516'
 	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.6.1'
