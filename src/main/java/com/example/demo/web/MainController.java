@@ -1,13 +1,15 @@
 package com.example.demo.web;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.ResultMsg;
 import com.example.demo.entity.User;
 import com.example.demo.service.ProductService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.impl.crypto.MacProvider;
 import org.apache.catalina.Session;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
+import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -42,24 +45,45 @@ public class MainController {
         this.ss = ss;
     }
 
+    public Boolean validate(String token){
+        boolean flag = true;
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(ss.getUserid(token));
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .acceptLeeway(1)   //1 sec for nbf and iat
+                    .acceptExpiresAt(5)
+                    .withIssuer("auth0")
+                    .build(); //Reusable verifier instance
+            DecodedJWT jwt = verifier.verify(token);
+            flag = true;
+        } catch (UnsupportedEncodingException exception){
+            //UTF-8 encoding not supported
+        } catch (JWTVerificationException exception){
+            //Invalid signature/claims
+            flag = false;
+        }
+        return flag;
+    }
+
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
     public @ResponseBody
     String login(@RequestBody User user) {
+        String token = "";
 
-        Key key = MacProvider.generateKey();
-
-        String compactJws = Jwts.builder()
-                .setSubject(user.getPassword())
-                .signWith(SignatureAlgorithm.HS512, key)
-                .compact();
-
-        httpSession.setAttribute("key", key);
-        httpSession.setMaxInactiveInterval(30);
-
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(user.getUsername()+user.getPassword());
+            token = JWT.create()
+                    .withIssuer("auth0")
+                    .sign(algorithm);
+        } catch (UnsupportedEncodingException exception){
+            //UTF-8 encoding not supported
+        } catch (JWTCreationException exception){
+            //Invalid Signing configuration / Couldn't convert Claims.
+        }
+        ss.saveSecret(user.getUsername()+user.getPassword(), token);
         JSONObject jsb = new JSONObject();
         jsb.put("res_code", 200);
-        jsb.put("msg", compactJws);
-        jsb.put("jsessionid", httpSession.getId());
+        jsb.put("msg", token);
 
         return jsb.toString();
     }
@@ -67,8 +91,15 @@ public class MainController {
     @RequestMapping(value = "/product/all", method = RequestMethod.GET)
     public @ResponseBody
     ResultMsg findAll(HttpServletRequest request, HttpServletResponse res) {
-        msg.setMsg(ss.queryProductAll());
-        msg.setRes_code(200);
+
+        if(this.validate(request.getHeader("Authorization"))){
+            msg.setMsg(ss.queryProductAll());
+            msg.setRes_code(200);
+        } else {
+            msg.setMsg(null);
+            msg.setRes_code(-999);
+        }
+
         return msg;
     }
 

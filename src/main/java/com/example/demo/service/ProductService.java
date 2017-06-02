@@ -22,6 +22,27 @@ import java.util.ArrayList;
 @Service
 public class ProductService implements ProductServiceImpl {
 
+    @Override
+    @Transactional
+    public int saveSecret(String user_id, String token) {
+        // 判断时候数据库里存在
+        int result = jdbcTemplate.update("INSERT IGNORE INTO user_secret VALUES(?,?)", new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, user_id);
+                ps.setString(2, token);
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public String getUserid(String token) {
+        System.out.println(token);
+        return jdbcTemplate.queryForObject("select user_id from user_secret where token = ?", new Object[]{token}, String.class);
+    }
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -100,3 +121,4 @@ public class ProductService implements ProductServiceImpl {
         return (ArrayList) jdbcTemplate.queryForList("SELECT * FROM female_style");
     }
 }
+

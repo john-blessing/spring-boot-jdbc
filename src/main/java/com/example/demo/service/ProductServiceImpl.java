@@ -22,4 +22,8 @@ public interface ProductServiceImpl {
      void sendEmail();
 
      ArrayList<Product> queryProductAll();
+
+     int saveSecret(String user_id, String token);
+
+     String getUserid(String token);
 }
