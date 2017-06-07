@@ -6,13 +6,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.demo.entity.Product;
-import com.example.demo.entity.ResultMsg;
-import com.example.demo.entity.User;
+import com.example.demo.entity.*;
 import com.example.demo.service.ProductService;
 import org.apache.catalina.Session;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletContext;
@@ -35,6 +35,9 @@ public class MainController {
 
     @Autowired
     private HttpSession httpSession;
+
+    @Autowired
+    private HelloMessage hm;
 
     @Autowired
     private ResultMsg msg;
@@ -86,6 +89,14 @@ public class MainController {
         JSONObject jsb = new JSONObject();
         jsb.put("res_code", 200);
         jsb.put("msg", token);
+
+//        hm.setName("hello");
+//
+//        try {
+//            this.greeting(hm);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         return jsb.toString();
     }
