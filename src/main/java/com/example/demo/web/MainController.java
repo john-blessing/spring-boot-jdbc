@@ -16,10 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
+import javax.servlet.http.*;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import java.util.ArrayList;
@@ -45,7 +43,7 @@ public class MainController {
         this.ss = ss;
     }
 
-    public Boolean validate(String token){
+    public Boolean validate(String token) {
         boolean flag = true;
         try {
             Algorithm algorithm = Algorithm.HMAC256(ss.getUserid(token));
@@ -56,9 +54,9 @@ public class MainController {
                     .build(); //Reusable verifier instance
             DecodedJWT jwt = verifier.verify(token);
             flag = true;
-        } catch (UnsupportedEncodingException exception){
+        } catch (UnsupportedEncodingException exception) {
             //UTF-8 encoding not supported
-        } catch (JWTVerificationException exception){
+        } catch (JWTVerificationException exception) {
             //Invalid signature/claims
             flag = false;
         }
@@ -67,20 +65,24 @@ public class MainController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
     public @ResponseBody
-    String login(@RequestBody User user) {
+    String login(@RequestBody User user, HttpServletResponse response) {
         String token = "";
-
         try {
-            Algorithm algorithm = Algorithm.HMAC256(user.getUsername()+user.getPassword());
+            Algorithm algorithm = Algorithm.HMAC256(user.getUsername() + user.getPassword());
             token = JWT.create()
                     .withIssuer("auth0")
                     .sign(algorithm);
-        } catch (UnsupportedEncodingException exception){
+        } catch (UnsupportedEncodingException exception) {
             //UTF-8 encoding not supported
-        } catch (JWTCreationException exception){
+        } catch (JWTCreationException exception) {
             //Invalid Signing configuration / Couldn't convert Claims.
         }
-        ss.saveSecret(user.getUsername()+user.getPassword(), token);
+
+        Cookie cookie = new Cookie("dscj", token);
+        cookie.setDomain("");
+        response.addCookie(cookie);
+
+        ss.saveSecret(user.getUsername() + user.getPassword(), token);
         JSONObject jsb = new JSONObject();
         jsb.put("res_code", 200);
         jsb.put("msg", token);
@@ -90,12 +92,18 @@ public class MainController {
 
     @RequestMapping(value = "/product/all", method = RequestMethod.GET)
     public @ResponseBody
-    ResultMsg findAll(HttpServletRequest request, HttpServletResponse res) {
-
-        if(this.validate(request.getHeader("Authorization"))){
-            msg.setMsg(ss.queryProductAll());
-            msg.setRes_code(200);
+    ResultMsg findAll(HttpServletRequest request) {
+        if (request.getHeader("Authorization") != null) {
+            if (this.validate(request.getHeader("Authorization"))) {
+                msg.setMsg(ss.queryProductAll());
+                msg.setRes_code(200);
+            } else {
+                msg.setMsg(null);
+                msg.setRes_code(-999);
+            }
         } else {
+            Cookie[] cookie = request.getCookies();
+
             msg.setMsg(null);
             msg.setRes_code(-999);
         }
