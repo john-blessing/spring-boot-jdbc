@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletContext;
@@ -42,6 +43,9 @@ public class MainController {
     @Autowired
     private ResultMsg msg;
 
+    @Autowired
+    private SimpMessagingTemplate template;
+
     public MainController(ProductService ss) {
         this.ss = ss;
     }
@@ -64,6 +68,12 @@ public class MainController {
             flag = false;
         }
         return flag;
+    }
+
+    @RequestMapping("/home")
+    @ResponseBody
+    String home() {
+        return "Hello World!";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
