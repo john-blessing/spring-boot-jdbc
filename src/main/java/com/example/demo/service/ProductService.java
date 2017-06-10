@@ -6,16 +6,14 @@ import com.example.demo.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by keifc on 2017/5/24.
@@ -24,46 +22,44 @@ import java.util.List;
 @Service
 public class ProductService implements ProductServiceImpl {
 
+    @Override
+    @Transactional
+    public int saveSecret(String user_id, String token) {
+        // 判断时候数据库里存在
+        int result = jdbcTemplate.update("INSERT IGNORE INTO user_secret VALUES(?,?)", new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, user_id);
+                ps.setString(2, token);
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public String getUserid(String token) {
+        System.out.println(token);
+        return jdbcTemplate.queryForObject("select user_id from user_secret where token = ?", new Object[]{token}, String.class);
+    }
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<Product> queryProductAll() {
-        List<Product> list = new ArrayList<Product>();
-
-        jdbcTemplate.query("select * from female_style", new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                while (rs.next()) {
-                    Product p = new Product();
-                    p.setP_id(rs.getString("p_id"));
-                    p.setP_name(rs.getString("p_name"));
-                    p.setP_price(rs.getFloat("p_price"));
-                    p.setP_des(rs.getString("p_des"));
-                    list.add(p);
-                }
-            }
-        });
-
-        return list;
-    }
-
-    @Override
     public Product queryProduct(String id) {
-        Product p = new Product();
-        jdbcTemplate.query("select * from female_style where p_id = ?", new Object[]{id}, new RowCallbackHandler() {
+        RowMapper<Product> rowMapper = new RowMapper<Product>() {
             @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                System.out.println(rs.next());
-                while (rs.next()){
-                    p.setP_id(rs.getString("p_id"));
-                    p.setP_name(rs.getString("p_name"));
-                    p.setP_price(rs.getFloat("p_price"));
-                    p.setP_des(rs.getString("p_des"));
-                }
+            public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Product p = new Product();
+                p.setP_id(rs.getString("p_id"));
+                p.setP_name(rs.getString("p_name"));
+                p.setP_price(rs.getFloat("p_price"));
+                p.setP_des(rs.getString("p_des"));
+                return p;
             }
-        });
-        return p.getP_id() == null ? null : p;
+        };
+        return jdbcTemplate.queryForObject("select * from female_style where p_id = ?", new Object[]{id}, rowMapper);
     }
 
     @Override
@@ -74,23 +70,16 @@ public class ProductService implements ProductServiceImpl {
     @Override
     @Transactional
     public int saveProduct(Product product) {
-        int count = this.queryProductCount(product.getP_id());
-        int result = -1;
-
         // 判断时候数据库里存在
-        if (count == 0) {
-            result = jdbcTemplate.update("INSERT INTO female_style VALUES(?,?,?,?)", new PreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement ps) throws SQLException {
-                    ps.setString(1, product.getP_id());
-                    ps.setString(2, product.getP_name());
-                    ps.setFloat(3, product.getP_price());
-                    ps.setString(4, product.getP_des());
-                }
-            });
-        } else if (count > 1) {
-            this.removeProduct(product.getP_id());
-        }
+        int result = jdbcTemplate.update("INSERT INTO female_style VALUES(?,?,?,?)", new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                ps.setString(1, product.getP_id());
+                ps.setString(2, product.getP_name());
+                ps.setFloat(3, product.getP_price());
+                ps.setString(4, product.getP_des());
+            }
+        });
 
         return result;
     }
@@ -121,4 +110,15 @@ public class ProductService implements ProductServiceImpl {
                     }
                 });
     }
+
+    @Override
+    public void sendEmail() {
+
+    }
+
+    @Override
+    public ArrayList<Product> queryProductAll() {
+        return (ArrayList) jdbcTemplate.queryForList("SELECT * FROM female_style");
+    }
 }
+

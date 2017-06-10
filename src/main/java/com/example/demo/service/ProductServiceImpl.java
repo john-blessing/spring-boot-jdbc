@@ -2,14 +2,12 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Product;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2017/5/28.
  */
 public interface ProductServiceImpl {
-
-     List<Product> queryProductAll();
 
      Product queryProduct(String id);
 
@@ -20,4 +18,12 @@ public interface ProductServiceImpl {
      int removeProduct(String id);
 
      int updateProduct(Product product);
+
+     void sendEmail();
+
+     ArrayList<Product> queryProductAll();
+
+     int saveSecret(String user_id, String token);
+
+     String getUserid(String token);
 }
