@@ -8,23 +8,25 @@ import java.util.ArrayList;
  * Created by keifc on 2017/5/31.
  */
 @Component
-public class ResultMsg {
-    private int res_code;
-    private ArrayList msg;
+public class ResultMsg<K, V> {
+    private K res_code;
+    private V msg;
 
-    public int getRes_code() {
+
+    public K getRes_code() {
         return res_code;
     }
 
-    public void setRes_code(int res_code) {
+    public void setRes_code(K res_code) {
         this.res_code = res_code;
     }
 
-    public ArrayList getMsg() {
+    public V getMsg() {
         return msg;
     }
 
-    public void setMsg(ArrayList msg) {
+    public void setMsg(V msg) {
         this.msg = msg;
     }
+
 }
