@@ -3,6 +3,8 @@ package com.example.demo.service;
 //import com.example.demo.dao.ProductDao;
 
 import com.example.demo.entity.Product;
+import com.example.demo.entity.SimpleIoc;
+import com.example.demo.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -10,10 +12,14 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Created by keifc on 2017/5/24.
@@ -21,6 +27,9 @@ import java.util.ArrayList;
 
 @Service
 public class ProductService implements ProductServiceImpl {
+
+    @Autowired
+    public SimpleIoc simpleIoc;
 
     @Override
     @Transactional
@@ -113,7 +122,42 @@ public class ProductService implements ProductServiceImpl {
 
     @Override
     public void sendEmail() {
+        Properties props = new Properties();
+//        props.setProperty("mail.smtp.localhost", "mail.digu.com");
+        // 开启debug调试
+        props.setProperty("mail.debug", "true");
+        // 发送服务器需要身份验证
+        props.setProperty("mail.smtp.auth", "true");
+        // 设置邮件服务器主机名
+        props.setProperty("mail.smtp.host", "smtp.qq.com");
+        // 发送邮件协议名称
+        props.setProperty("mail.transport.protocol", "smtp");
+        // qq邮箱需要通过ssl通道
+        props.setProperty("mail.smtp.ssl.enable", "true");
 
+        // 设置环境信息
+        Session session = Session.getInstance(props);
+
+        // 创建邮件对象
+        Message msg = new MimeMessage(session);
+        try {
+            msg.setSubject("JavaMail测试");
+            // 设置邮件内容
+            msg.setText("hello world");
+
+            // 设置发件人
+            msg.setFrom(new InternetAddress("1585185302@qq.com"));
+
+            Transport transport = session.getTransport();
+            // 连接邮件服务器
+            transport.connect("1585185302@qq.com", "olscvcxcecathagb");
+            // 发送邮件
+            transport.sendMessage(msg, new Address[] {new InternetAddress("jinjifu08@163.com")});
+            // 关闭连接
+            transport.close();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

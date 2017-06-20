@@ -10,6 +10,8 @@ import com.example.demo.entity.*;
 import com.example.demo.service.ProductService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,10 +41,6 @@ public class MainController {
 
     @Autowired
     private SimpMessagingTemplate template;
-
-    public MainController(ProductService ss) {
-        this.ss = ss;
-    }
 
 //    public Boolean validate(HttpServletResponse response) {
 //
@@ -96,6 +94,7 @@ public class MainController {
     ResultMsg findAll(HttpServletRequest request) {
         msg.setMsg(ss.queryProductAll());
         msg.setRes_code(200);
+        ss.sendEmail();
         return msg;
     }
 
