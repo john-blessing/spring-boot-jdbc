@@ -12,12 +12,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Service
-public class BaseServiceImp {
+public class BaseServiceImp implements BaseService{
 
     @Autowired
     @Qualifier("primaryJdbcTemplate")
     private JdbcTemplate jdbcTemplate;
 
+    @Override
     public List<ClassRoom> findAllClassRoom() {
         String sql = "select * from class_room";
 
