@@ -2,21 +2,17 @@ package com.example.demo.web;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTCreationException;
-import com.example.demo.entity.*;
-import com.example.demo.service.BaseService;
+import com.example.demo.entity.ClassRoom;
+import com.example.demo.entity.ResultMsg;
+import com.example.demo.entity.User;
 import com.example.demo.service.BaseServiceImp;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-import sun.rmi.runtime.Log;
 
-
-import javax.servlet.http.*;
-import javax.swing.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,8 +22,8 @@ import java.util.List;
 @RequestMapping(value = "/api")
 public class MainController {
 
-    private BaseServiceImp bs = new BaseServiceImp();
-
+    @Autowired
+    private BaseServiceImp baseServiceImp;
 //    public Boolean validate(HttpServletResponse response) {
 //
 //        boolean flag = true;
@@ -60,8 +56,6 @@ public class MainController {
                     .sign(algorithm);
         } catch (UnsupportedEncodingException exception) {
             //UTF-8 encoding not supported
-        } catch (JWTCreationException exception) {
-            //Invalid Signing configuration / Couldn't convert Claims.
         }
 
         Cookie cookie = new Cookie("dscj", token);
@@ -77,11 +71,10 @@ public class MainController {
     @RequestMapping(value="/getClassRoom", method = RequestMethod.GET)
     public @ResponseBody
     ResultMsg findClassRoom() {
-        ResultMsg rm = new ResultMsg();
-        rm.setRes_code(200);
-        rm.setMsg(null);
-        List<ClassRoom> list = bs.findClassRoom();
-        System.out.println(list);
-        return rm;
+        List<ClassRoom> list = baseServiceImp.findAllClassRoom();
+        ResultMsg resultMsg = new ResultMsg();
+        resultMsg.setMsg(list);
+        resultMsg.setRes_code(200);
+        return resultMsg;
     }
 }
