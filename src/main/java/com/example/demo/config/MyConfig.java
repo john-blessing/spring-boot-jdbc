@@ -3,6 +3,7 @@ package com.example.demo.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
@@ -19,5 +20,11 @@ public class MyConfig extends WebMvcConfigurerAdapter{
                 .allowedHeaders("X-Requested-With")
 //                .exposedHeaders("*")
                 .allowCredentials(false).maxAge(3600);
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new Interceptor()).addPathPatterns("/**");
+        super.addInterceptors(registry);
     }
 }

@@ -1,24 +1,23 @@
 package com.example.demo.web;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.demo.entity.*;
-import com.example.demo.service.ProductService;
+import com.example.demo.service.BaseService;
+import com.example.demo.service.BaseServiceImp;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import sun.rmi.runtime.Log;
 
 
 import javax.servlet.http.*;
+import javax.swing.*;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by keifc on 2017/5/24.
@@ -27,20 +26,7 @@ import java.util.ArrayList;
 @RequestMapping(value = "/api")
 public class MainController {
 
-    @Autowired
-    private ProductService ss;
-
-    @Autowired
-    private HttpSession httpSession;
-
-    @Autowired
-    private HelloMessage hm;
-
-    @Autowired
-    private ResultMsg msg;
-
-    @Autowired
-    private SimpMessagingTemplate template;
+    private BaseServiceImp bs = new BaseServiceImp();
 
 //    public Boolean validate(HttpServletResponse response) {
 //
@@ -88,67 +74,14 @@ public class MainController {
 
         return jsb.toString();
     }
-
-    @RequestMapping(value = "/product/all", method = RequestMethod.GET)
+    @RequestMapping(value="/getClassRoom", method = RequestMethod.GET)
     public @ResponseBody
-    ResultMsg findAll(HttpServletRequest request) {
-        msg.setMsg(ss.queryProductAll());
-        msg.setRes_code(200);
-        ss.sendEmail();
-        return msg;
+    ResultMsg findClassRoom() {
+        ResultMsg rm = new ResultMsg();
+        rm.setRes_code(200);
+        rm.setMsg(null);
+        List<ClassRoom> list = bs.findClassRoom();
+        System.out.println(list);
+        return rm;
     }
-
-    @RequestMapping(value = "/product/{p_id}", method = RequestMethod.GET)
-    public @ResponseBody
-    ResultMsg find(@PathVariable String p_id, HttpServletRequest req) {
-        ArrayList list = new ArrayList();
-        list.add(ss.queryProduct(p_id));
-        msg.setMsg(list);
-        msg.setRes_code(200);
-        return msg;
-    }
-
-    @RequestMapping(value = "/product/save", method = RequestMethod.POST, produces = "application/json")
-    public @ResponseBody
-    ResultMsg save(@RequestBody Product product) {
-        if (ss.saveProduct(product) == 1) {
-            msg.setMsg(null);
-            msg.setRes_code(200);
-            return msg;
-        } else {
-            msg.setMsg(null);
-            msg.setRes_code(100);
-            return msg;
-        }
-
-    }
-
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public @ResponseBody
-    ResultMsg delete(@RequestParam String p_id) {
-        if (ss.removeProduct(p_id) == 1) {
-            msg.setMsg(null);
-            msg.setRes_code(200);
-            return msg;
-        } else {
-            msg.setMsg(null);
-            msg.setRes_code(100);
-            return msg;
-        }
-    }
-
-    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")
-    public @ResponseBody
-    ResultMsg update(@RequestBody Product product) {
-        if (ss.updateProduct(product) == 1) {
-            msg.setMsg(null);
-            msg.setRes_code(200);
-            return msg;
-        } else {
-            msg.setMsg(null);
-            msg.setRes_code(100);
-            return msg;
-        }
-    }
-
 }
