@@ -58,8 +58,9 @@ public class UserServiceImp implements UserService {
 
     @Override
     public int register(String username, String password) {
-        String sql = "insert into my_local_db.user values(NULL,?, ?);";
+        String sql = "insert into my_local_db.user values(NULL,?, ?, 0);";
         int rows = jdbcTemplate.update(sql, username, password);
         return rows;
     }
+
 }

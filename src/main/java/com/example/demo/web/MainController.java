@@ -50,13 +50,13 @@ public class MainController {
     public @ResponseBody
     ResultMsg register(@RequestBody UserVo userVo) {
         ResultMsg resultMsg = new ResultMsg();
-        User user1 = userServiceImp.findUser(userVo.getUsername(), userVo.getPassword());
+        User user1 = userServiceImp.findUser(userVo.getUsername(), base.encryptSHA(userVo.getPassword()));
         if (user1 == null) {
             int rows = userServiceImp.register(userVo.getUsername(), base.encryptSHA(userVo.getPassword()));
             if (rows > 0) {
                 resultMsg.setContent("注册成功!");
                 resultMsg.setRes_code(200);
-                base.sendEmail();
+//                base.sendEmail();
             } else {
                 resultMsg.setContent("注册失败!");
                 resultMsg.setRes_code(-100);
