@@ -11,5 +11,10 @@ public interface UserService {
 
     User findUserById(int user_id);
 
-    User findUser(User user);
+    User findUser(String username, String password);
+
+    /**
+     * 注册
+     */
+    int register(String username, String password);
 }

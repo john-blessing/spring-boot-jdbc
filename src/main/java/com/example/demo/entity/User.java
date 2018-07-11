@@ -3,7 +3,7 @@ package com.example.demo.entity;
 public class User {
     int user_id;
     String username;
-    String password;
+    String classroom;
 
     public int getUser_id() {
         return user_id;
@@ -13,7 +13,6 @@ public class User {
         this.user_id = user_id;
     }
 
-
     public String getUsername() {
         return username;
     }
@@ -22,11 +21,11 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getClassroom() {
+        return classroom;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setClassroom(String classroom) {
+        this.classroom = classroom;
     }
 }
