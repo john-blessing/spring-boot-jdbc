@@ -1,8 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.ClassRoom;
+import com.example.demo.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +31,12 @@ public class BaseServiceImp implements BaseService {
         });
 
         return list;
+    }
+
+    @Override
+    public User findUser(int user_id) {
+        String sql = "select * from user where user_id = ?";
+        User user = jdbcTemplate.queryForObject(sql, new Object[]{user_id}, new BeanPropertyRowMapper<>(User.class));
+        return user;
     }
 }
