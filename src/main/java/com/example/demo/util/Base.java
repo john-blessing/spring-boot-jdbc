@@ -9,6 +9,7 @@ import com.example.demo.entity.User;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.util.HashMap;
@@ -78,26 +79,30 @@ public class Base {
 
     /**
      * 验证token
-     * @param cookies
+     * @param
      * @return Boolean
      */
-    public Boolean checkToken(Cookie[] cookies) {
-        HashMap hashMap = parseCookies(cookies);
-        String token = (String) hashMap.get("dscj");
+    public Boolean checkToken(HttpServletRequest request) {
         boolean flag = true;
-        try {
-            Algorithm algorithm = Algorithm.HMAC256("secret");
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .acceptLeeway(1)   //1 sec for nbf and iat
-                    .acceptExpiresAt(5)
-                    .withIssuer("auth0")
-                    .build(); //Reusable verifier instance
-            DecodedJWT jwt = verifier.verify(token);
-            flag = true;
-        } catch (UnsupportedEncodingException exception) {
-            //UTF-8 encoding not supported
-        } catch (JWTVerificationException exception) {
-            //Invalid signature/claims
+        if (request.getCookies() != null) {
+            HashMap hashMap = parseCookies(request.getCookies());
+            String token = (String) hashMap.get("dscj");
+            try {
+                Algorithm algorithm = Algorithm.HMAC256("secret");
+                JWTVerifier verifier = JWT.require(algorithm)
+                        .acceptLeeway(1)   //1 sec for nbf and iat
+                        .acceptExpiresAt(5)
+                        .withIssuer("auth0")
+                        .build(); //Reusable verifier instance
+                DecodedJWT jwt = verifier.verify(token);
+                flag = true;
+            } catch (UnsupportedEncodingException exception) {
+                //UTF-8 encoding not supported
+            } catch (JWTVerificationException exception) {
+                //Invalid signature/claims
+                flag = false;
+            }
+        } else {
             flag = false;
         }
         return flag;
@@ -115,7 +120,7 @@ public class Base {
             Algorithm algorithm = Algorithm.HMAC256("secret");
             token = JWT.create()
                     .withIssuer("auth0")
-                    .withClaim("user_id", 123)
+                    .withClaim("user_id", user.getUser_id())
                     .sign(algorithm);
         } catch (UnsupportedEncodingException exception) {
             //UTF-8 encoding not supported

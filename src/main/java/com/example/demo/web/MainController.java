@@ -3,7 +3,7 @@ package com.example.demo.web;
 import com.example.demo.entity.ClassRoom;
 import com.example.demo.entity.ResultMsg;
 import com.example.demo.entity.User;
-import com.example.demo.service.BaseServiceImp;
+import com.example.demo.service.UserServiceImp;
 import com.example.demo.util.Base;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ import java.util.List;
 public class MainController {
 
     @Autowired
-    private BaseServiceImp baseServiceImp;
+    private UserServiceImp userServiceImp;
 
     @Autowired
     private Base base;
@@ -30,14 +30,18 @@ public class MainController {
     public @ResponseBody
     ResultMsg login(@RequestBody User user, HttpServletResponse response) {
         ResultMsg resultMsg = new ResultMsg();
-
-        Cookie cookie = new Cookie("dscj", base.createToken(user));
-        cookie.setMaxAge(24 * 60 * 60 * 30);
-        cookie.setDomain("");
-        response.addCookie(cookie);
-
-        resultMsg.setMsg("success");
-        resultMsg.setRes_code(200);
+        User user1 = userServiceImp.findUser(user);
+        if (user1 != null) {
+            Cookie cookie = new Cookie("dscj", base.createToken(user1));
+            cookie.setMaxAge(60);
+            cookie.setDomain("");
+            response.addCookie(cookie);
+            resultMsg.setContent(user1);
+            resultMsg.setRes_code(200);
+        } else {
+            resultMsg.setContent("没有相关用户");
+            resultMsg.setRes_code(-1);
+        }
 
         return resultMsg;
     }
@@ -47,27 +51,30 @@ public class MainController {
     ResultMsg findClassRoom(HttpServletRequest request) {
         ResultMsg resultMsg = new ResultMsg();
 
-        if (request.getCookies() != null) {
-            if (base.checkToken(request.getCookies())) {
-                List<ClassRoom> list = baseServiceImp.findAllClassRoom();
-                resultMsg.setMsg(list);
-                resultMsg.setRes_code(200);
-            } else {
-                resultMsg.setMsg("token错误");
-                resultMsg.setRes_code(-100);
-            }
+        if (base.checkToken(request)) {
+            List<ClassRoom> list = userServiceImp.findAllClassRoom();
+            resultMsg.setContent(list);
+            resultMsg.setRes_code(200);
         } else {
-            resultMsg.setMsg("token过期");
+            resultMsg.setContent("token错误");
             resultMsg.setRes_code(-100);
         }
 
         return resultMsg;
     }
 
-    @RequestMapping(value = "/current", method = RequestMethod.GET)
+    @RequestMapping(value = "/current/{user_id}", method = RequestMethod.POST)
     public @ResponseBody
-    User findUser(HttpServletRequest request) {
-//            User user = baseServiceImp.findUser();
-
+    ResultMsg findUserById(@PathVariable String user_id, HttpServletRequest request) {
+        ResultMsg resultMsg = new ResultMsg();
+        if (base.checkToken(request)) {
+            User user = userServiceImp.findUserById(Integer.parseInt(user_id));
+            resultMsg.setContent(user);
+            resultMsg.setRes_code(200);
+        } else {
+            resultMsg.setContent("token错误");
+            resultMsg.setRes_code(-100);
+        }
+        return resultMsg;
     }
 }
