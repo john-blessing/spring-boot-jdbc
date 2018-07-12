@@ -1,13 +1,19 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.Answer;
 import com.example.demo.entity.ClassRoom;
+import com.example.demo.entity.Question;
 import com.example.demo.entity.User;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -63,4 +69,34 @@ public class UserServiceImp implements UserService {
         return rows;
     }
 
+    @Override
+    public List<Question> searchQuestions(String content, int page_index, int page_size) {
+            String sql = "select * from my_local_db.question where q_content like ? limit ?, ?;";
+        String content1 = "%" + content + "%";
+        List<Question> question = jdbcTemplate.query(sql, new Object[]{content1, page_index * page_size, page_size}, (ResultSet rs, int rowNum) -> {
+            Question question1 = new Question();
+            question1.setQ_type(rs.getString("q_type"));
+            question1.setQ_content(rs.getString("q_content"));
+            question1.setQ_id(rs.getInt("q_id"));
+            JSONArray jsonArray = new JSONArray(rs.getString("q_answer"));
+            List<Answer> list = new ArrayList<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                Answer answer = new Answer();
+                JSONObject obj = (JSONObject) jsonArray.get(i);
+                answer.setId((String) obj.get("id"));
+                answer.setContent((String) obj.get("content"));
+                list.add(answer);
+            }
+            question1.setQ_answer(list);
+            return question1;
+        });
+        return question;
+    }
+
+    @Override
+    public int createQuestion(Question question) {
+        String sql = "insert into my_local_db.question values(NULL, ?, ?, ?)";
+        int rows = jdbcTemplate.update(sql, question.getQ_type(), question.getQ_content(), JSONObject.valueToString(question.getQ_answer()));
+        return rows;
+    }
 }

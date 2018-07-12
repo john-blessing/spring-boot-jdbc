@@ -1,9 +1,6 @@
 package com.example.demo.web;
 
-import com.example.demo.entity.ClassRoom;
-import com.example.demo.entity.ResultMsg;
-import com.example.demo.entity.User;
-import com.example.demo.entity.UserVo;
+import com.example.demo.entity.*;
 import com.example.demo.service.UserServiceImp;
 import com.example.demo.util.Base;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +37,7 @@ public class MainController {
             resultMsg.setRes_code(200);
         } else {
             resultMsg.setContent("没有相关用户");
-            resultMsg.setRes_code(-1);
+            resultMsg.setRes_code(500);
         }
 
         return resultMsg;
@@ -59,11 +56,11 @@ public class MainController {
 //                base.sendEmail();
             } else {
                 resultMsg.setContent("注册失败!");
-                resultMsg.setRes_code(-100);
+                resultMsg.setRes_code(500);
             }
         } else {
             resultMsg.setContent("已有相关用户是否查找密码");
-            resultMsg.setRes_code(-1);
+            resultMsg.setRes_code(500);
         }
 
         return resultMsg;
@@ -80,7 +77,7 @@ public class MainController {
             resultMsg.setRes_code(200);
         } else {
             resultMsg.setContent("token错误");
-            resultMsg.setRes_code(-100);
+            resultMsg.setRes_code(500);
         }
 
         return resultMsg;
@@ -96,9 +93,45 @@ public class MainController {
             resultMsg.setRes_code(200);
         } else {
             resultMsg.setContent("token错误");
-            resultMsg.setRes_code(-100);
+            resultMsg.setRes_code(500);
         }
         return resultMsg;
     }
 
+    @RequestMapping(value = "/searchQuestions", method = RequestMethod.POST)
+    public @ResponseBody
+    ResultMsg searchQuestions(@RequestBody Search search, HttpServletRequest request) {
+        ResultMsg resultMsg = new ResultMsg();
+        if (base.checkToken(request) > 0) {
+            List<Question> questions = userServiceImp.searchQuestions(search.getContent(), search.getPage_index(), search.getPage_size());
+            resultMsg.setContent(questions);
+            resultMsg.setRes_code(200);
+        } else {
+            resultMsg.setContent("token错误");
+            resultMsg.setRes_code(500);
+        }
+        return resultMsg;
+    }    
+    
+    @RequestMapping(value = "/createQuestion", method = RequestMethod.POST)
+    public @ResponseBody
+    ResultMsg createQuestion(@RequestBody Question question, HttpServletRequest request) {
+        ResultMsg resultMsg = new ResultMsg();
+        if (base.checkToken(request) > 0) {
+            int rows = userServiceImp.createQuestion(question);
+            if (rows > 0) {
+                resultMsg.setContent("创建成功");
+                resultMsg.setRes_code(200);
+            } else {
+                resultMsg.setContent("创建失败");
+                resultMsg.setRes_code(200);
+            }
+        } else {
+            resultMsg.setContent("token错误");
+            resultMsg.setRes_code(500);
+        }
+        return resultMsg;
+    }
+    
+    
 }
