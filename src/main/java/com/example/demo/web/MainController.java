@@ -139,7 +139,7 @@ public class MainController {
     @RequestMapping(value = "/getQueryParamater", method = RequestMethod.POST)
     public @ResponseBody
     ResultMsg getQueryParamater(@RequestParam(name = "content") String content,  HttpServletRequest request) {
-        resultMsg.setContent(content + "111");
+        resultMsg.setContent(content);
         resultMsg.setRes_code(200);
         return resultMsg;
     }
