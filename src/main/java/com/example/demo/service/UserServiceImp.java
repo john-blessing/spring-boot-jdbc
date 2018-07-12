@@ -99,4 +99,12 @@ public class UserServiceImp implements UserService {
         int rows = jdbcTemplate.update(sql, question.getQ_type(), question.getQ_content(), JSONObject.valueToString(question.getQ_answer()));
         return rows;
     }
+
+    @Override
+    public long findAllQuestionCount() {
+        String sql = "select count(q_id) as total_count from my_local_db.question";
+        int total_count = jdbcTemplate.queryForObject(sql, (ResultSet rs, int rowNum) ->  rs.getInt("total_count"));
+        System.out.println(">>>>>>>>>.enter " + total_count);
+        return total_count;
+    }
 }

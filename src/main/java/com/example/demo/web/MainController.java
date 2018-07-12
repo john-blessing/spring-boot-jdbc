@@ -104,7 +104,11 @@ public class MainController {
         ResultMsg resultMsg = new ResultMsg();
         if (base.checkToken(request) > 0) {
             List<Question> questions = userServiceImp.searchQuestions(search.getContent(), search.getPage_index(), search.getPage_size());
-            resultMsg.setContent(questions);
+            long total_count = userServiceImp.findAllQuestionCount();
+            PageResult result = new PageResult();
+            result.setList(questions);
+            result.setTotal_count(total_count);
+            resultMsg.setContent(result);
             resultMsg.setRes_code(200);
         } else {
             resultMsg.setContent("token错误");

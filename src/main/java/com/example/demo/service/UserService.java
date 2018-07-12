@@ -22,4 +22,5 @@ public interface UserService {
     List<Question> searchQuestions(String content, int page_index, int page_size);
 
     int createQuestion(Question question);
+    long findAllQuestionCount();
 }
