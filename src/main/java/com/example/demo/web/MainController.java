@@ -24,10 +24,12 @@ public class MainController {
     @Autowired
     private Base base;
 
+    @Autowired
+    private ResultMsg resultMsg;
+
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
     public @ResponseBody
     ResultMsg login(@RequestBody UserVo userVo, HttpServletResponse response) {
-        ResultMsg resultMsg = new ResultMsg();
         User user1 = userServiceImp.findUser(userVo.getUsername(), base.encryptSHA(userVo.getPassword()));
         if (user1 != null) {
             Cookie cookie = new Cookie("dscj", base.createToken(user1));
@@ -46,7 +48,6 @@ public class MainController {
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "application/json")
     public @ResponseBody
     ResultMsg register(@RequestBody UserVo userVo) {
-        ResultMsg resultMsg = new ResultMsg();
         User user1 = userServiceImp.findUser(userVo.getUsername(), base.encryptSHA(userVo.getPassword()));
         if (user1 == null) {
             int rows = userServiceImp.register(userVo.getUsername(), base.encryptSHA(userVo.getPassword()));
@@ -69,8 +70,6 @@ public class MainController {
     @RequestMapping(value = "/getClassRoom", method = RequestMethod.GET)
     public @ResponseBody
     ResultMsg findClassRoom(HttpServletRequest request) {
-        ResultMsg resultMsg = new ResultMsg();
-
         if (base.checkToken(request) > 0) {
             List<ClassRoom> list = userServiceImp.findAllClassRoom();
             resultMsg.setContent(list);
@@ -86,7 +85,6 @@ public class MainController {
     @RequestMapping(value = "/current", method = RequestMethod.POST)
     public @ResponseBody
     ResultMsg findUserById(HttpServletRequest request) {
-        ResultMsg resultMsg = new ResultMsg();
         if (base.checkToken(request) > 0) {
             User user = userServiceImp.findUserById(base.checkToken(request));
             resultMsg.setContent(user);
@@ -100,10 +98,12 @@ public class MainController {
 
     @RequestMapping(value = "/searchQuestions", method = RequestMethod.POST)
     public @ResponseBody
-    ResultMsg searchQuestions(@RequestBody Search search, HttpServletRequest request) {
-        ResultMsg resultMsg = new ResultMsg();
+    ResultMsg searchQuestions(@RequestParam(name = "content") String content,
+                              @RequestParam(name = "page_index") int page_index,
+                              @RequestParam(name = "page_size") int page_size,
+                              HttpServletRequest request) {
         if (base.checkToken(request) > 0) {
-            List<Question> questions = userServiceImp.searchQuestions(search.getContent(), search.getPage_index(), search.getPage_size());
+            List<Question> questions = userServiceImp.searchQuestions(content, page_index, page_size);
             long total_count = userServiceImp.findAllQuestionCount();
             PageResult result = new PageResult();
             result.setList(questions);
@@ -120,7 +120,6 @@ public class MainController {
     @RequestMapping(value = "/createQuestion", method = RequestMethod.POST)
     public @ResponseBody
     ResultMsg createQuestion(@RequestBody Question question, HttpServletRequest request) {
-        ResultMsg resultMsg = new ResultMsg();
         if (base.checkToken(request) > 0) {
             int rows = userServiceImp.createQuestion(question);
             if (rows > 0) {
@@ -136,6 +135,13 @@ public class MainController {
         }
         return resultMsg;
     }
-    
+
+    @RequestMapping(value = "/getQueryParamater", method = RequestMethod.POST)
+    public @ResponseBody
+    ResultMsg getQueryParamater(@RequestParam(name = "content") String content,  HttpServletRequest request) {
+        resultMsg.setContent(content + "111");
+        resultMsg.setRes_code(200);
+        return resultMsg;
+    }
     
 }

@@ -23,10 +23,15 @@ repositories {
 }
 
 
+bootRun {
+	addResources = true
+}
+
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter-web")
-	compile("org.springframework.boot:spring-boot-devtools")
 	compile("org.springframework.boot:spring-boot-starter")
+	compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+
 	// 数据库链接
 	compile('mysql:mysql-connector-java:5.1.6')
 	compile('org.springframework.boot:spring-boot-starter-jdbc')

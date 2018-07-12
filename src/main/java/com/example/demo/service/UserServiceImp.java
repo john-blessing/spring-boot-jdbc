@@ -71,7 +71,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public List<Question> searchQuestions(String content, int page_index, int page_size) {
-            String sql = "select * from my_local_db.question where q_content like ? limit ?, ?;";
+        String sql = "select * from my_local_db.question where q_content like ? limit ?, ?;";
         String content1 = "%" + content + "%";
         List<Question> question = jdbcTemplate.query(sql, new Object[]{content1, page_index * page_size, page_size}, (ResultSet rs, int rowNum) -> {
             Question question1 = new Question();
