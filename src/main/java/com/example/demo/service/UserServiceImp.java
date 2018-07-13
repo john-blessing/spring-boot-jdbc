@@ -34,7 +34,11 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User findUserById(int user_id) {
-        String sql = "select c.user_id AS user_id, c.username AS username, c.classroom AS classroom FROM (SELECT a.user_id AS user_id, a.username AS username, b.c_name AS classroom FROM my_local_db.user a, my_local_db.class_room b where a.c_id = b.c_id) c where user_id = ?";
+        String sql = "select c.user_id AS user_id, c.username AS username, c.classroom AS classroom, c.avator AS avator FROM " +
+                "(SELECT a.user_id AS user_id, a.username AS username, a.avator AS avator, b.c_name AS classroom FROM " +
+                "my_local_db.user a, my_local_db.class_room b " +
+                "WHERE a.c_id = b.c_id) c " +
+                "WHERE user_id = ?";
         User user = jdbcTemplate.queryForObject(sql, new Object[]{user_id}, new BeanPropertyRowMapper<>(User.class));
         return user;
     }
@@ -44,13 +48,13 @@ public class UserServiceImp implements UserService {
         String sql = "        SELECT \n" +
                 "    c.user_id AS user_id,\n" +
                 "    c.username AS username,\n" +
-                "    c.classroom AS classroom\n" +
+                "    c.classroom AS classroom, c.avator AS avator\n" +
                 "FROM\n" +
                 "    (SELECT \n" +
                 "        a.user_id AS user_id,\n" +
                 "            a.username AS username,\n" +
                 "            b.c_name AS classroom,\n" +
-                "            a.password AS password\n" +
+                "            a.password AS password, a.avator AS avator\n" +
                 "    FROM\n" +
                 "        my_local_db.user a, my_local_db.class_room b\n" +
                 "    WHERE\n" +

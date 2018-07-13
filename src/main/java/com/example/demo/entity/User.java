@@ -5,6 +5,7 @@ public class User {
     String username;
     String classroom;
     int role_id;
+    String avator;
 
     public int getUser_id() {
         return user_id;
@@ -36,5 +37,13 @@ public class User {
 
     public void setRole_id(int role_id) {
         this.role_id = role_id;
+    }
+
+    public String getAvator() {
+        return avator;
+    }
+
+    public void setAvator(String avator) {
+        this.avator = avator;
     }
 }

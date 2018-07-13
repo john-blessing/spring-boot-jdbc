@@ -15,11 +15,10 @@ public class MyConfig extends WebMvcConfigurerAdapter{
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins("*")
-                .allowedMethods("PUT", "DELETE", "POST", "GET")
-                .allowedHeaders("X-Requested-With")
-//                .exposedHeaders("*")
-                .allowCredentials(false).maxAge(3600);
+                .allowedOrigins("http://localhost:9090");
+//                .allowedMethods("PUT", "DELETE", "POST", "GET")
+//                .allowedHeaders("X-Requested-With")
+//                .allowCredentials(true).maxAge(3600);
     }
 
     @Override

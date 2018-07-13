@@ -27,7 +27,7 @@ public class MainController {
     @Autowired
     private ResultMsg resultMsg;
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public @ResponseBody
     ResultMsg login(@RequestBody UserVo userVo, HttpServletResponse response) {
         User user1 = userServiceImp.findUser(userVo.getUsername(), base.encryptSHA(userVo.getPassword()));
@@ -143,5 +143,14 @@ public class MainController {
         resultMsg.setRes_code(200);
         return resultMsg;
     }
-    
+
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public @ResponseBody
+    ResultMsg getQueryParamater(HttpServletResponse response) {
+        Cookie cookie = new Cookie("dscj", "");
+        response.addCookie(cookie);
+        resultMsg.setContent(true);
+        resultMsg.setRes_code(200);
+        return resultMsg;
+    }
 }
