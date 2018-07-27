@@ -5,6 +5,7 @@ import com.example.demo.entity.Question;
 import com.example.demo.entity.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     // 查找所有的班级类型
@@ -23,4 +24,5 @@ public interface UserService {
 
     int createQuestion(Question question);
     long findAllQuestionCount();
+    Map getArticleById(int id);
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -110,5 +111,13 @@ public class UserServiceImp implements UserService {
         int total_count = jdbcTemplate.queryForObject(sql, (ResultSet rs, int rowNum) ->  rs.getInt("total_count"));
         System.out.println(">>>>>>>>>.enter " + total_count);
         return total_count;
+    }
+
+    @Override
+    public Map getArticleById(int id) {
+        String sql = "select title, content from my_local_db.article where a_id = " + id;
+        Map hashMap = (Map) jdbcTemplate.queryForMap(sql);
+
+        return hashMap;
     }
 }

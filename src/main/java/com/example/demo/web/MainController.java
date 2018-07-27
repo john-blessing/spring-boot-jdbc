@@ -3,13 +3,18 @@ package com.example.demo.web;
 import com.example.demo.entity.*;
 import com.example.demo.service.UserServiceImp;
 import com.example.demo.util.Base;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by keifc on 2017/5/24.
@@ -150,6 +155,51 @@ public class MainController {
         Cookie cookie = new Cookie("dscj", "");
         response.addCookie(cookie);
         resultMsg.setContent(true);
+        resultMsg.setRes_code(200);
+        return resultMsg;
+    }
+
+    public void uploadFile(byte[] file, String filePath, String fileName) throws Exception {
+        File targetFile = new File(filePath);
+        if(!targetFile.exists()){
+            targetFile.mkdirs();
+        }
+        FileOutputStream out = new FileOutputStream(filePath+fileName);
+        out.write(file);
+        out.flush();
+        out.close();
+    }
+
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public @ResponseBody
+    ResultMsg upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        if (base.checkToken(request) > 0) {
+            String contentType = file.getContentType();
+            String fileName = file.getOriginalFilename();
+            String filePath = request.getSession().getServletContext().getRealPath("upload/imgs/");
+
+            Thread thread = new Thread(() -> {
+                try {
+                    this.uploadFile(file.getBytes(), filePath, fileName);
+                } catch (Exception e) {
+                    // TODO: handle exception
+                }
+            });
+            thread.start();
+
+            String avator = "http://192.168.1.242:8084/upload/imgs/" + fileName;
+
+        } else {
+
+        }
+        return resultMsg;
+    }
+
+    @RequestMapping(value = "/getArticleById/{id}", method = RequestMethod.POST)
+    public @ResponseBody
+    ResultMsg getArticleById(@PathVariable("id") int id) {
+        Map hashMap = userServiceImp.getArticleById(id);
+        resultMsg.setContent(hashMap);
         resultMsg.setRes_code(200);
         return resultMsg;
     }
